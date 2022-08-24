@@ -1,5 +1,4 @@
-require 'node'
-
+require_relative 'node'
 class Tree
   attr_accessor :root
 
@@ -35,7 +34,25 @@ class Tree
     end
   end
 
-  def build_tree(ar)
-    sorted_ar = merge_sort(ar.uniq)
+  def building_tree(ar, start, tip)
+    return nil if (start > tip)
+    mid = (start + tip) / 2
+    root = Node.new(ar[mid])
+    root.left = building_tree(ar, start, (mid.abs-1))
+    root.right = building_tree(ar, (mid+1), tip)
+    root
+  end
+
+  def build_tree
+    building_tree(merge_sort(@array.uniq), 0, (@array.uniq.size - 1))
+  end
+
+  def pretty_print(node = build_tree, prefix = '', is_left = true)
+    pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
+    puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
+    pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
   end
 end
+
+tree = Tree.new([6, 4, 7, 5, 3, 2, 9, 11, 8, -1, 0, 1, 2, -2, -3, -4])
+tree.pretty_print

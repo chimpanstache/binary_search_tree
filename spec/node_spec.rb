@@ -1,4 +1,5 @@
 require 'node'
+require 'tree'
 
 RSpec.describe Node do
   describe '<=>' do
