@@ -62,7 +62,28 @@ class Tree
     end
   end
 
-  def delete
+  def search_node(value, node = @root)
+    return node if node.data == value
+
+    search_node(value, node.right) if value > node.data
+
+    search_node(value, node.left)
+  end
+
+  def first_case()
+  end
+
+  def delete(value)
+    return nil unless @array.include?(value)
+    node_to_delete = search_node(value)
+    
+    if node_to_delete.left.nil? && node_to_delete.right.nil?
+      first_case
+    elsif node_to_delete.lef.nil? || node_to_delete.right.nil? 
+      second_case
+    else
+      third_case
+    end
   end
 
   def pretty_print(node = @root, prefix = '', is_left = true)
