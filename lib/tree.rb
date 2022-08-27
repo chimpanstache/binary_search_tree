@@ -1,29 +1,11 @@
 require_relative 'node'
 class Tree
-  attr_accessor :root
+  attr_accessor :root, :current, :parent
 
   def initialize(array)
     @array = array
     @root = build_tree
-  end
-
-  def sort(left, right)
-    sorted = []
-    while !left.empty? && !right.empty? do
-      if left[0] < right[0]
-        sorted << left[0]
-        left.shift
-      else
-        sorted << right[0]
-        right.shift
-      end
-    end
-    if left.empty?
-      sorted.concat(right)
-    else
-      sorted.concat(left)
-    end
-    sorted
+    set_node_status
   end
 
   def merge_sort(arr)
@@ -35,13 +17,11 @@ class Tree
     end
   end
 
-  def building_tree(ar, start, tip)
-    return nil if (start > tip)
-    mid = (start + tip) / 2
-    root = Node.new(ar[mid])
-    root.left = building_tree(ar, start, (mid.abs-1))
-    root.right = building_tree(ar, (mid+1), tip)
-    root
+  def set_node_status(node = @root)
+    node.define_state
+    
+    set_node_status(node.left) unless node.left.nil?
+    set_node_status(node.right) unless node.right.nil?
   end
 
   def build_tree
@@ -62,25 +42,14 @@ class Tree
     end
   end
 
-  def search_node(value, node = @root)
-    return node if node.data == value
-
-    search_node(value, node.right) if value > node.data
-
-    search_node(value, node.left)
-  end
-
-  def first_case()
-  end
-
   def delete(value)
     return nil unless @array.include?(value)
-    node_to_delete = search_node(value)
-    
-    if node_to_delete.left.nil? && node_to_delete.right.nil?
-      first_case
-    elsif node_to_delete.lef.nil? || node_to_delete.right.nil? 
-      second_case
+    @parent, @current = search_node_and_parent(value)
+
+    if @current.state == State::LEAF
+      first_case(value)
+    elsif @current.state == State::ONE_CHILD
+      second_case(value)
     else
       third_case
     end
@@ -91,9 +60,77 @@ class Tree
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
     pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
   end
+
+  private
+
+  def building_tree(ar, start, tip)
+    return nil if (start > tip)
+    mid = (start + tip) / 2
+    root = Node.new(ar[mid])
+    root.left = building_tree(ar, start, (mid.abs-1))
+    root.right = building_tree(ar, (mid+1), tip)
+    root
+  end
+
+  def first_case(value)
+    @parent.delete_child(value)
+  end
+
+  def second_case(value)
+    if @current.left.nil?
+      @parent.modify_child(@current.data, @current.right)
+    elsif @current.right.nil?
+      @parent.modify_child(@current.data, @current.left) 
+    end
+  end
+
+  def third_case
+    next_biggest = find_next_biggest
+
+    @current.data = next_biggest.data
+
+    next_biggest, next_biggest_parent = search_node_and_parent(next_biggest.data)
+ 
+    next_biggest_parent.left = next_biggest.right
+  end
+  
+  def sort(left, right)
+    sorted = []
+    while !left.empty? && !right.empty? do
+      if left[0] < right[0]
+        sorted << left[0]
+        left.shift
+      else
+        sorted << right[0]
+        right.shift
+      end
+    end
+    if left.empty?
+      sorted.concat(right)
+    else
+      sorted.concat(left)
+    end
+    sorted
+  end
+
+  def find_next_biggest(node = @current.right)
+    find_next_biggest(node.left) if node.left 
+    
+    node
+  end 
+
+  def search_node_and_parent(value, node = @root)
+    if value > node.data
+      return [node, node.right] if node.right.data == value
+      search_node_and_parent(value, node.right)
+    else
+      return [node, node.left] if node.left.data == value
+      search_node_and_parent(value, node.left)
+    end
+  end
 end
 
 tree = Tree.new([4, 5, 2, 11, -1, 1, -2, -4])
 # tree.pretty_print
-tree.insert(3)
+tree.delete(2)
 tree.pretty_print
