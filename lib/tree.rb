@@ -59,6 +59,22 @@ class Tree
     node
   end
 
+  def level_order
+    arr = []
+    arr_to_return = []
+    arr.push(root.data)
+
+    while(!arr.empty?)
+      byebug
+      current = arr.first
+      arr.push(find(current).left.data) if find(current).left
+      arr.push(find(current).right.data) if find(current).right
+      arr_to_return << current
+      arr.shift
+    end
+    arr_to_return
+  end        
+
   private
 
   def building_tree(ar, start, tip)
@@ -129,3 +145,7 @@ class Tree
     end
   end
 end
+
+tree = Tree.new([50, 30, 20, 40, 32, 34, 36, 70, 60, 65, 80, 75, 85])
+tree.pretty_print
+# puts tree.level_order
