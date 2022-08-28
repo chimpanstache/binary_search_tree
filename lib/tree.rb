@@ -54,6 +54,11 @@ class Tree
     pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
   end
 
+  def find(value)
+    parent, node = search_parent_and_node(value)
+    node
+  end
+
   private
 
   def building_tree(ar, start, tip)

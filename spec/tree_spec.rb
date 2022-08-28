@@ -13,7 +13,7 @@ RSpec.describe Tree do
       end
     end
 
-    context 'insertion works great' do
+    context '#insert' do
       it 'inserts greatly new nodes' do
         random_number = rand(-1000..1000)
         tree.insert(random_number)
@@ -22,12 +22,19 @@ RSpec.describe Tree do
       end
     end
 
-    context 'deletion works great' do
+    context '#delete' do
       it 'deletes greatly new nodes' do
         random_number = rand(-1000..1000)
         tree.delete(random_number)
         expect(ordered_tree?(tree.root)).to be true
         expect(no_duplicates?(tree.root)).to be true
+      end
+    end
+
+    context '#find' do
+      it 'finds nodes' do
+        value = array.sample
+        expect(tree.find(value).data).to eq value
       end
     end
   end
