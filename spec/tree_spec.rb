@@ -2,39 +2,61 @@ require 'node'
 require 'tree'
 
 RSpec.describe Tree do
-  # describe '#building_tree' do
-    
-  #   context 'testing a tree' do
-  #     tree = Tree.new([6, 4, 7])
-  #     tree_root = tree.build_tree
-
-  #     it 'creates a balanced binary sorted tree' do
-  #       expect(tree_root.left.data).to eq 4 
-  #       expect(tree_root.left.left).to eq nil 
-  #       expect(tree_root.left.right).to eq nil 
-  #       expect(tree_root.data).to eq 6 
-  #       expect(tree_root.right.data).to eq 7 
-  #       expect(tree_root.right.left).to eq nil 
-  #       expect(tree_root.right.right).to eq nil 
-  #     end
-  #   end
-  # end
-  
   describe 'blabla' do
+    array = Array.new(rand(1..1000)) { rand(-1000..1000) }
+    tree = Tree.new(array)
+    
     context 'testing a tree' do
-      tree2 = Tree.new([6, 4, 7, 5])
-      tree_root_2 = tree2.build_tree
-
       it 'creates a balanced binary sorted tree' do
-        byebug
-        expect(tree_root_2.left.data).to eq 4 
-        expect(tree_root_2.left.left).to eq nil 
-        expect(tree_root_2.left.right).to eq nil 
-        expect(tree_root_2.data).to eq 5 
-        expect(tree_root_2.right.data).to eq 6 
-        expect(tree_root_2.right.left).to eq nil 
-        expect(tree_root_2.right.right.data).to eq 7 
+        expect(ordered_tree?(tree.root)).to be true
+        expect(no_duplicates?(tree.root)).to be true
       end
     end
+
+    context 'insertion works great' do
+      it 'inserts greatly new nodes' do
+        random_number = rand(-1000..1000)
+        tree.insert(random_number)
+        expect(ordered_tree?(tree.root)).to be true
+        expect(no_duplicates?(tree.root)).to be true
+      end
+    end
+
+    context 'deletion works great' do
+      it 'deletes greatly new nodes' do
+        random_number = rand(-1000..1000)
+        tree.delete(random_number)
+        expect(ordered_tree?(tree.root)).to be true
+        expect(no_duplicates?(tree.root)).to be true
+      end
+    end
+  end
+
+  def ordered_tree?(node)
+    if node.left
+      return false if node.left.data > node.data
+      ordered_tree?(node.left)
+    end
+    if node.right
+      return false if node.data > node.right.data
+      ordered_tree?(node.right)
+    end
+    true
+  end
+
+  def array_filling(node, ar = [])
+    ar << node.data
+    if node.left
+      array_filling(node.left, ar)
+    end
+    if node.right
+      array_filling(node.right, ar)
+    end
+    ar    
+  end
+
+  def no_duplicates?(root)
+    ar = array_filling(root)
+    ar == ar.uniq
   end
 end

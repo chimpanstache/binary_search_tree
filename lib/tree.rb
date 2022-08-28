@@ -36,12 +36,11 @@ class Tree
   end
 
   def delete(value)
-    # byebug
     return nil unless @array.include?(value)
     @parent, @current = search_parent_and_node(value)
 
     if @current.state == State::LEAF
-      first_case(value)
+      @parent.delete_child(value)
     elsif @current.state == State::ONE_CHILD
       second_case(value)
     else
@@ -66,10 +65,6 @@ class Tree
     root
   end
 
-  def first_case(value)
-    @parent.delete_child(value)
-  end
-
   def second_case(value)
     if @current.left.nil?
       @parent.modify_child(@current.data, @current.right)
@@ -79,7 +74,6 @@ class Tree
   end
 
   def third_case
-    # byebug
     next_biggest = find_next_biggest
 
     next_biggest_parent, next_biggest = search_parent_and_node(next_biggest.data)
@@ -130,8 +124,3 @@ class Tree
     end
   end
 end
-
-tree = Tree.new([50, 30, 20, 40, 32, 34, 36, 70, 60, 65, 80, 75, 85])
-# tree.pretty_print
-tree.delete(50)
-tree.pretty_print
