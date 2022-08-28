@@ -1,11 +1,11 @@
 require_relative 'node'
+require 'byebug'
 class Tree
   attr_accessor :root, :current, :parent
 
   def initialize(array)
     @array = array
     @root = build_tree
-    set_node_status
   end
 
   def merge_sort(arr)
@@ -15,13 +15,6 @@ class Tree
       left, right = arr.each_slice((arr.size/2.0).round).to_a
       sort(merge_sort(left), merge_sort(right))
     end
-  end
-
-  def set_node_status(node = @root)
-    node.define_state
-    
-    set_node_status(node.left) unless node.left.nil?
-    set_node_status(node.right) unless node.right.nil?
   end
 
   def build_tree
@@ -43,8 +36,9 @@ class Tree
   end
 
   def delete(value)
+    # byebug
     return nil unless @array.include?(value)
-    @parent, @current = search_node_and_parent(value)
+    @parent, @current = search_parent_and_node(value)
 
     if @current.state == State::LEAF
       first_case(value)
@@ -85,13 +79,18 @@ class Tree
   end
 
   def third_case
+    # byebug
     next_biggest = find_next_biggest
 
-    @current.data = next_biggest.data
+    next_biggest_parent, next_biggest = search_parent_and_node(next_biggest.data)
 
-    next_biggest, next_biggest_parent = search_node_and_parent(next_biggest.data)
- 
-    next_biggest_parent.left = next_biggest.right
+    @current.data = next_biggest.data
+    
+    if next_biggest.state == State::LEAF
+      next_biggest_parent.delete_child(next_biggest.data)
+    else
+      next_biggest_parent.left = next_biggest.right
+    end
   end
   
   def sort(left, right)
@@ -114,23 +113,25 @@ class Tree
   end
 
   def find_next_biggest(node = @current.right)
-    find_next_biggest(node.left) if node.left 
+    return find_next_biggest(node.left) if node.left    
     
     node
   end 
 
-  def search_node_and_parent(value, node = @root)
+  def search_parent_and_node(value, node = @root)
+    return [nil, node] if value == node.data
+
     if value > node.data
       return [node, node.right] if node.right.data == value
-      search_node_and_parent(value, node.right)
+      search_parent_and_node(value, node.right)
     else
       return [node, node.left] if node.left.data == value
-      search_node_and_parent(value, node.left)
+      search_parent_and_node(value, node.left)
     end
   end
 end
 
-tree = Tree.new([4, 5, 2, 11, -1, 1, -2, -4])
+tree = Tree.new([50, 30, 20, 40, 32, 34, 36, 70, 60, 65, 80, 75, 85])
 # tree.pretty_print
-tree.delete(2)
+tree.delete(50)
 tree.pretty_print

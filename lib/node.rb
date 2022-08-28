@@ -6,7 +6,7 @@ end
 
 class Node
   include Comparable
-  attr_accessor :left, :right, :data, :state
+  attr_accessor :left, :right, :data
 
   def initialize(data = nil)
     @data = data
@@ -17,7 +17,7 @@ class Node
     data <=> other.data
   end
 
-  def define_state
+  def state
     if @left.nil? && @right.nil?
       @state = State::LEAF
     elsif @left.nil? || @right.nil? 
@@ -28,20 +28,20 @@ class Node
   end
 
   def modify_child(value, new_child)
-    if left.data == value
-      left = new_child
-    elsif right.data == value
-      right = new_child
+    if @left&.data == value
+      @left = new_child
+    elsif @right&.data == value
+      @right = new_child
     end
 
     nil
   end
 
   def delete_child(value)
-    if value == left.data
-      left = nil
-    elsif value == right.data
-      right = nil
+    if value == @left&.data
+      @left = nil
+    elsif value == @right&.data
+      @right = nil
     end
   end
 end
