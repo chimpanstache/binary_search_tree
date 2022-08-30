@@ -59,13 +59,55 @@ class Tree
     node
   end
 
-  def level_order
+  
+  def level_order(&block)
+    return if root.nil?
+    return level_order_with_block(&block) if block_given?
+
+    level_order_no_block
+  end
+  
+  def inorder(node = @root, ar = [], &block)
+    return if node.nil?
+    inorder(node.left, ar, &block)
+    if block_given?
+      yield node
+    else
+      ar << node.data
+    end
+    inorder(node.right, ar, &block)
+    return ar unless block_given?
+  end
+
+  def preorder(node = @root, ar = [], &block)
+    return if node.nil?
+    if block_given?
+      yield node
+    else
+      ar << node.data
+    end
+    preorder(node.left, ar, &block)
+    preorder(node.right, ar, &block)
+    return ar unless block_given?
+    ar
+  end
+  
+  def postorder(node = @root, ar = [], &block)
+    return if node.nil?
+    postorder(node.left, ar, &block)
+    postorder(node.right, ar, &block)
+    yield node if block_given?
+    return ar << node.data unless block_given?
+  end
+  
+  private
+  
+  def level_order_no_block
     arr = []
     arr_to_return = []
     arr.push(root.data)
 
     while(!arr.empty?)
-      byebug
       current = arr.first
       arr.push(find(current).left.data) if find(current).left
       arr.push(find(current).right.data) if find(current).right
@@ -73,9 +115,20 @@ class Tree
       arr.shift
     end
     arr_to_return
-  end        
+  end    
+  
+  def level_order_with_block(&block)
+    arr = []
+    arr.push(root)
 
-  private
+    while(!arr.empty?)
+      current = arr.first
+      yield current
+      arr.push(current.left) if current.left
+      arr.push(current.right) if current.right
+      arr.shift
+    end
+  end
 
   def building_tree(ar, start, tip)
     return nil if (start > tip)
@@ -146,6 +199,4 @@ class Tree
   end
 end
 
-tree = Tree.new([50, 30, 20, 40, 32, 34, 36, 70, 60, 65, 80, 75, 85])
-tree.pretty_print
-# puts tree.level_order
+
