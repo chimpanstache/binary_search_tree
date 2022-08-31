@@ -99,34 +99,47 @@ class Tree
     yield node if block_given?
     return ar << node.data unless block_given?
   end
-  
+
+  def height_navigation(node, count = 1)
+    @h << count
+    count = height_navigation(node.left, count += 1) unless node.left.nil?
+    count = height_navigation(node.right, count += 1) unless node.right.nil?
+    count -= 1
+  end
+    
+  def height(node)
+    @h = []
+    height_navigation(node)
+    @h.max
+  end
+
   private
   
   def level_order_no_block
-    arr = []
-    arr_to_return = []
-    arr.push(root.data)
+    stack = []
+    stack_to_return = []
+    stack.push(root.data)
 
-    while(!arr.empty?)
-      current = arr.first
-      arr.push(find(current).left.data) if find(current).left
-      arr.push(find(current).right.data) if find(current).right
-      arr_to_return << current
-      arr.shift
+    while(!stack.empty?)
+      current = stack.first
+      stack.push(find(current).left.data) if find(current).left
+      stack.push(find(current).right.data) if find(current).right
+      stack_to_return << current
+      stack.shift
     end
-    arr_to_return
+    stack_to_return
   end    
   
   def level_order_with_block(&block)
-    arr = []
-    arr.push(root)
+    stack = []
+    stack.push(root)
 
-    while(!arr.empty?)
-      current = arr.first
+    while(!stack.empty?)
+      current = stack.first
       yield current
-      arr.push(current.left) if current.left
-      arr.push(current.right) if current.right
-      arr.shift
+      stack.push(current.left) if current.left
+      stack.push(current.right) if current.right
+      stack.shift
     end
   end
 
