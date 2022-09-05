@@ -100,7 +100,7 @@ class Tree
     return ar << node.data unless block_given?
   end
 
-  def height_navigation(node, count = 1)
+  def height_navigation(node, count = 0)
     @h << count
     count = height_navigation(node.left, count += 1) unless node.left.nil?
     count = height_navigation(node.right, count += 1) unless node.right.nil?
@@ -113,7 +113,7 @@ class Tree
     @h.max
   end
 
-  def depth_navigation(node, start = root, count = 1)
+  def depth_navigation(node, start = root, count = 0)
     @h << count if start == node
     count = depth_navigation(node, start.left, count += 1) unless start.left.nil?
     count = depth_navigation(node, start.right, count += 1) unless start.right.nil?
