@@ -113,6 +113,19 @@ class Tree
     @h.max
   end
 
+  def depth_navigation(node, start = root, count = 1)
+    @h << count if start == node
+    count = depth_navigation(node, start.left, count += 1) unless start.left.nil?
+    count = depth_navigation(node, start.right, count += 1) unless start.right.nil?
+    count -= 1
+  end
+    
+  def depth(node)
+    @h = []
+    depth_navigation(node)
+    @h.first
+  end
+  
   private
   
   def level_order_no_block
