@@ -120,7 +120,7 @@ class Tree
   end  
 
   def rebalance
-    ar = level_order
+    @array = level_order
     @root = build_tree
   end
 
@@ -233,13 +233,14 @@ class Tree
   end 
 
   def search_parent_and_node(value, node = @root)
+    return nil if node.nil?
     return [nil, node] if value == node.data
 
     if value > node.data
-      return [node, node.right] if node.right.data == value
+      return [node, node.right] if node.right&.data == value
       search_parent_and_node(value, node.right)
     else
-      return [node, node.left] if node.left.data == value
+      return [node, node.left] if node.left&.data == value
       search_parent_and_node(value, node.left)
     end
   end
