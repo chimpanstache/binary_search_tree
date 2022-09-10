@@ -108,24 +108,40 @@ class Tree
   end
     
   def height(node)
+    return 0 if node.nil?
     @h = []
     height_navigation(node)
     @h.max
   end
 
   def depth_navigation(node, start = root, count = 0)
-    @h << count if start == node
+    @d << count if start == node
     count = depth_navigation(node, start.left, count += 1) unless start.left.nil?
     count = depth_navigation(node, start.right, count += 1) unless start.right.nil?
     count -= 1
   end
     
   def depth(node)
-    @h = []
+    return 0 if node.nil?
+    @d = []
     depth_navigation(node)
-    @h.first
+    @d.first
   end
-  
+
+  def balanced_navigation(node = root)
+    return if node.nil?
+    difference = height(node.left) - height(node.right)
+    difference.abs > 1 ? @b << false : @b << true
+    balanced_navigation(node.left)
+    balanced_navigation(node.right)
+  end
+
+  def balanced?(node = root)
+    @b = []
+    balanced_navigation
+    @b.all?
+  end
+
   private
   
   def level_order_no_block
