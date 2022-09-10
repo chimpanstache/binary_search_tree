@@ -59,7 +59,6 @@ class Tree
     node
   end
 
-  
   def level_order(&block)
     return if root.nil?
     return level_order_with_block(&block) if block_given?
@@ -99,14 +98,7 @@ class Tree
     yield node if block_given?
     return ar << node.data unless block_given?
   end
-
-  def height_navigation(node, count = 0)
-    @h << count
-    count = height_navigation(node.left, count += 1) unless node.left.nil?
-    count = height_navigation(node.right, count += 1) unless node.right.nil?
-    count -= 1
-  end
-    
+  
   def height(node)
     return 0 if node.nil?
     @h = []
@@ -114,20 +106,26 @@ class Tree
     @h.max
   end
 
-  def depth_navigation(node, start = root, count = 0)
-    @d << count if start == node
-    count = depth_navigation(node, start.left, count += 1) unless start.left.nil?
-    count = depth_navigation(node, start.right, count += 1) unless start.right.nil?
-    count -= 1
-  end
-    
   def depth(node)
     return 0 if node.nil?
     @d = []
     depth_navigation(node)
     @d.first
+  end  
+  
+  def balanced?(node = root)
+    @b = []
+    balanced_navigation
+    @b.all?
+  end  
+
+  def rebalance
+    ar = level_order
+    @root = build_tree
   end
 
+  private
+  
   def balanced_navigation(node = root)
     return if node.nil?
     difference = height(node.left) - height(node.right)
@@ -136,13 +134,19 @@ class Tree
     balanced_navigation(node.right)
   end
 
-  def balanced?(node = root)
-    @b = []
-    balanced_navigation
-    @b.all?
+  def depth_navigation(node, start = root, count = 0)
+    @d << count if start == node
+    count = depth_navigation(node, start.left, count += 1) unless start.left.nil?
+    count = depth_navigation(node, start.right, count += 1) unless start.right.nil?
+    count -= 1
   end
 
-  private
+  def height_navigation(node, count = 0)
+    @h << count
+    count = height_navigation(node.left, count += 1) unless node.left.nil?
+    count = height_navigation(node.right, count += 1) unless node.right.nil?
+    count -= 1
+  end
   
   def level_order_no_block
     stack = []
