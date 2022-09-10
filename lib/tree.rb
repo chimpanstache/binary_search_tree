@@ -153,7 +153,7 @@ class Tree
     stack_to_return = []
     stack.push(root.data)
 
-    while(!stack.empty?)
+    until stack.empty?
       current = stack.first
       stack.push(find(current).left.data) if find(current).left
       stack.push(find(current).right.data) if find(current).right
@@ -167,7 +167,7 @@ class Tree
     stack = []
     stack.push(root)
 
-    while(!stack.empty?)
+    until stack.empty?
       current = stack.first
       yield current
       stack.push(current.left) if current.left
